@@ -2,6 +2,7 @@
 
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
+import ProductList from "./ProductList";
 
 interface Category {
     id: number;
@@ -10,6 +11,7 @@ interface Category {
 
 export default function CategoryList() {
     const [categories, setCategories] = useState<Category[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
     useEffect(() => {
         const fecthCategories = async () => {
@@ -31,22 +33,34 @@ export default function CategoryList() {
     return (
         <section className="mt-12 px-10">
             <h2 className="text-xl font-bold mb-6 text-gray-800">카테고리별 상품</h2>
-            <div className="grid grid-cols-6 gap-4">
-                {categories.length > 0 ? (
-                    categories.map((category) => (
-                        <div
-                            key={category.id}
-                            className="border border-gray-200 rounded-lg py-3 text-center text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                        >
-                            {category.name}
-                        </div>
-                    ))
-                ) : (
-                    <p className="text-gray-500 text-sm col-span-6 text-center">
-                        카테고리를 불러오는 중...
-                    </p>
-                )}
+
+            { /* 카테고리 버튼 */}
+            <div className="flex gap-2 mb-10">
+                <button
+                    onClick={() => setSelectedCategory(null)}
+                    className={`px-4 py-2 rounded-md text-sm font-medium ${selectedCategory === null
+                        ? 'bg-red-700 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                >
+                    전체
+                </button>
+                {categories.map((category) => (
+                    <button
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={`px-4 py-2 rounded-md text-sm font-medium ${selectedCategory === category.id
+                            ? 'bg-red-700 text-white'
+                            : 'border-1 border-gray-200 bg-white text-gray hover:bg-gray-200'
+                            }`}
+                    >
+                        {category.name}
+                    </button>
+                ))}
             </div>
+
+            { /* 상품 목록 */}
+            <ProductList selectedCategory={selectedCategory} />
         </section>
     );
 }
