@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, use, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -11,6 +11,7 @@ import { SignUpSchema } from "@/schemas/account";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { TSignUpFormError } from "@/types/form";
 import { FormMessage } from "./FormMessage";
+import toast from "react-hot-toast";
 
 export function SignUpForm() {
   const { errors, validateField } =
@@ -18,6 +19,7 @@ export function SignUpForm() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loginId, setLoginId] = useState("");
+  const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
 
   // 이메일 / 닉네임 각각 메시지 상태
@@ -38,6 +40,9 @@ export function SignUpForm() {
     if (id === "login_id") {
       setLoginId(value);
       setEmailCheck(null);
+    }
+    if (id === "password") {
+      setPassword(value);
     }
     if (id === "nickname") {
       setNickname(value);
@@ -76,7 +81,7 @@ export function SignUpForm() {
     }
   };
 
-  // ✅ 회원가입 처리 함수
+  //  회원가입 처리 함수
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -86,13 +91,27 @@ export function SignUpForm() {
 
     // 필수 입력 확인
     if (!loginId.trim() || !passwordInput?.value.trim() || !nickname.trim()) {
-      alert("모든 항목을 입력해주세요.");
+      toast.error("모든 항목을 입력해주세요.");
       return;
     }
 
-    // 유효성 에러가 있는 경우 중단
+    // 유효성 에러가 있는 경우
     if (Object.keys(errors).length > 0) {
-      alert("입력값을 다시 확인해주세요.");
+      toast.error(
+        "입력하신 내용에 오류가 발견되었습니다. 에러 메시지를 확인해 주세요."
+      );
+      return;
+    }
+
+    // 이메일 중복 확인 여부 체크
+    if (!emailCheck || emailCheck.color !== "text-green-600") {
+      toast.error("이메일 중복 확인을 해주세요.");
+      return;
+    }
+
+    // 닉네임 중복 확인 여부 체크
+    if (!nickCheck || nickCheck.color !== "text-green-600") {
+      toast.error("닉네임 중복 확인을 해주세요.");
       return;
     }
 
@@ -110,21 +129,23 @@ export function SignUpForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "회원가입에 실패했습니다.");
+        toast.error(
+          data.error || "회원가입 중 오류가 발생했습니다. 다시 시도해 주세요."
+        );
         return;
       }
 
-      alert("회원가입이 완료되었습니다!");
-      window.location.href = "/login"; // ✅ 로그인 페이지로 이동
+      toast.success("회원가입이 완료되었습니다!");
+      window.location.href = "/login"; // 로그인 페이지로 리다이렉트
     } catch (err) {
       console.error("회원가입 요청 실패:", err);
-      alert("서버 오류가 발생했습니다.");
+      toast.error("회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.");
     }
   };
 
   return (
     <FormCard title="회원가입" description="모든 정보는 필수 입력사항입니다.">
-      {/* ✅ onSubmit 연결 */}
+      {/* onSubmit 연결 */}
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         {/* 이메일 */}
         <div className="grid gap-2">
@@ -169,6 +190,7 @@ export function SignUpForm() {
               type={showPassword ? "text" : "password"}
               placeholder="8~16자리 / 영문 대소문자, 숫자, 특수문자 조합"
               required
+              value={password}
               className="pr-10"
               onChange={handleChange}
             />
@@ -198,6 +220,7 @@ export function SignUpForm() {
               type="text"
               placeholder="2~12자리 / 한글, 영문 대소문자, 숫자 가능"
               required
+              value={nickname}
               onChange={handleChange}
             />
             <Button

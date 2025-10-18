@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           success: false, 
-          error: '유효성 검사 실패',
+          error: '입력하신 내용에 오류가 발견되었습니다. 에러 메시지를 확인해 주세요.',
           details: validatedData.error.flatten().fieldErrors 
         },
         { status: 400 }
@@ -69,14 +69,14 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('DB 저장 실패:', error);
       return NextResponse.json(
-        { success: false, error: '회원가입 처리 중 오류가 발생했습니다.' },
+        { success: false, error: '회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.' },
         { status: 500 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      message: '회원가입이 완료되었습니다.',
+      message: '회원가입이 성공적으로 완료되었습니다.',
       data: {
         id: data[0].id,
         email: data[0].login_id,
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('회원가입 오류:', error);
     return NextResponse.json(
-      { success: false, error: '서버 오류가 발생했습니다.' },
+      { success: false, error: '회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.' },
       { status: 500 }
     );
   }
