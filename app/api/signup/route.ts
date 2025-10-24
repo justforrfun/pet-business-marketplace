@@ -84,6 +84,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
+
   } catch (error) {
     console.error('회원가입 오류:', error);
     return NextResponse.json(
