@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
-import { SignUpSchema } from '@/schemas/account';
+import { SignUpSchema } from '@/schemas/auth';
 
 export async function POST(request: NextRequest) {
   try {

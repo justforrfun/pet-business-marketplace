@@ -7,7 +7,7 @@ import { Label } from "../ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { FormCard } from "./FormCard";
 import { Submit } from "./Submit";
-import { SignUpSchema } from "@/schemas/account";
+import { SignUpSchema } from "@/schemas/auth";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { TSignUpFormError } from "@/types/form";
 import { FormMessage } from "./FormMessage";

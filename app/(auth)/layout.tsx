@@ -1,6 +1,6 @@
 import { Toaster } from "react-hot-toast";
 
-export default function AccountLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
