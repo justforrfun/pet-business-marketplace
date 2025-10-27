@@ -153,7 +153,6 @@ export function SignUpForm() {
   };
 
   return (
-    <>
       <FormCard title="회원가입" description="모든 정보는 필수 입력사항입니다.">
         {/* onSubmit 연결 */}
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
