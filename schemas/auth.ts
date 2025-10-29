@@ -1,8 +1,7 @@
-//app/(account)/schemas/account.ts
 import { z } from "zod";
 
 export const SignUpSchema = z.object({
-  // 이메일
+  // 로그인 ID(이메일)
   login_id: z
     .string()
     .min(1, { message: "이메일을 입력해 주세요." })
