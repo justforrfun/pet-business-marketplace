@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     // member 테이블에서 type에 따라 조회
     let query = supabase.from("member").select("id");
 
-    if (type === "email") {
+    if (type === "login_id") {
       query = query.eq("login_id", value);
     } else if (type === "nickname") {
       query = query.eq("nickname", value);
@@ -43,8 +43,8 @@ export async function POST(request: NextRequest) {
       success: true,
       isDuplicate,
       message: isDuplicate
-        ? `이미 사용 중인 ${type === "email" ? "이메일" : "닉네임"}입니다.`
-        : `사용 가능한 ${type === "email" ? "이메일" : "닉네임"}입니다.`,
+        ? `이미 사용 중인 ${type === "login_id" ? "이메일" : "닉네임"}입니다.`
+        : `사용 가능한 ${type === "login_id" ? "이메일" : "닉네임"}입니다.`,
     });
   } catch (error) {
     console.error("서버 오류:", error);
