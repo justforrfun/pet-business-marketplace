@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, use, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -23,7 +23,7 @@ export function SignUpForm() {
   const [nickname, setNickname] = useState("");
 
   // 이메일 / 닉네임 각각 메시지 상태
-  const [emailCheck, setEmailCheck] = useState<{
+  const [loginIdCheck, setLoginIdCheck] = useState<{
     message: string;
     color: string;
   } | null>(null);
@@ -39,7 +39,7 @@ export function SignUpForm() {
 
     if (id === "login_id") {
       setLoginId(value);
-      setEmailCheck(null);
+      setLoginIdCheck(null);
     }
     if (id === "password") {
       setPassword(value);
@@ -52,7 +52,7 @@ export function SignUpForm() {
 
   // 중복 확인
   const handleDuplicateCheck = async (
-    type: "email" | "nickname",
+    type: "login_id" | "nickname",
     value: string
   ) => {
     try {
@@ -69,14 +69,14 @@ export function SignUpForm() {
         color: isAvailable ? "text-green-600" : "text-red-600",
       };
 
-      if (type === "email") setEmailCheck(msg);
+      if (type === "login_id") setLoginIdCheck(msg);
       else setNickCheck(msg);
     } catch (err) {
       const msg = {
         message: "요청 중 오류가 발생했습니다.",
         color: "text-red-600",
       };
-      if (type === "email") setEmailCheck(msg);
+      if (type === "login_id") setLoginIdCheck(msg);
       else setNickCheck(msg);
     }
   };
@@ -104,7 +104,7 @@ export function SignUpForm() {
     }
 
     // 이메일 중복 확인 여부 체크
-    if (!emailCheck || emailCheck.color !== "text-green-600") {
+    if (!loginIdCheck || loginIdCheck.color !== "text-green-600") {
       toast.error("이메일 중복 확인을 해주세요.");
       return;
     }
@@ -155,7 +155,7 @@ export function SignUpForm() {
           <div className="flex gap-2">
             <Input
               id="login_id"
-              type="email"
+              type="login_id"
               placeholder="mail@email.com"
               required
               onChange={handleChange}
@@ -164,7 +164,7 @@ export function SignUpForm() {
               variant="secondary"
               type="button"
               disabled={!!errors?.login_id || !loginId.trim()} // 유효하지 않으면 비활성화
-              onClick={() => handleDuplicateCheck("email", loginId)}
+              onClick={() => handleDuplicateCheck("login_id", loginId)}
             >
               중복 확인
             </Button>
@@ -172,9 +172,9 @@ export function SignUpForm() {
           {/* Zod 에러 */}
           {errors?.login_id && <FormMessage message={errors.login_id[0]} />}
           {/* 중복확인 결과 */}
-          {emailCheck && (
-            <p className={`text-sm ml-1 mt-1 ${emailCheck.color}`}>
-              {emailCheck.message}
+          {loginIdCheck && (
+            <p className={`text-sm ml-1 mt-1 ${loginIdCheck.color}`}>
+              {loginIdCheck.message}
             </p>
           )}
         </div>
