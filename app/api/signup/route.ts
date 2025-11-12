@@ -22,14 +22,14 @@ export async function POST(request: NextRequest) {
 
     const { login_id, password, nickname } = validatedData.data;
 
-    // 2. 이메일 중복 확인
-    const { data: existingEmail } = await supabase
+    // 2. 로그인 ID(이메일) 중복 확인
+    const { data: existingLoginId } = await supabase
       .from('member')
       .select('login_id')
       .eq('login_id', login_id)
       .single();
 
-    if (existingEmail) {
+    if (existingLoginId) {
       return NextResponse.json(
         { success: false, error: '이미 사용 중인 이메일입니다.' },
         { status: 409 }
@@ -50,10 +50,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 4. 비밀번호 암호화
-    // const hashedPassword = await bcrypt.hash(password, 10);
-
-    // 5. 회원 정보 저장
+    // 4. 회원 정보 저장
     const { data, error } = await supabase
       .from('member')
       .insert([
@@ -79,7 +76,7 @@ export async function POST(request: NextRequest) {
       message: '회원가입이 성공적으로 완료되었습니다.',
       data: {
         id: data[0].id,
-        email: data[0].login_id,
+        loginId: data[0].login_id,
         nickname: data[0].nickname
       }
     });
