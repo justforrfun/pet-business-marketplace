@@ -3,3 +3,8 @@ export type TSignUpFormError = {
   password?: string[];
   nickname?: string[];
 };
+
+export type TLoginFormError = {
+  login_id?: string[];  
+  password?: string[];
+};
