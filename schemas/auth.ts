@@ -42,7 +42,19 @@ export const LoginSchema = z.object({
   login_id: z
     .email({ message: "유효한 이메일 주소를 입력해 주세요." }),
   // 비밀번호
-  password: z
+  password: z 
     .string()
     .min(1, {message:"비밀번호를 입력해 주세요." }),
 }); 
+
+export const FindIdSchema = z.object({
+  nickname: z
+    .string()
+    .min(2, { message: "닉네임은 2자 이상이어야 합니다." })
+    .max(12, { message: "닉네임은 12자 이하이어야 합니다." })
+    .regex(/^[가-힣a-zA-Z0-9]+$/, {
+      message: "닉네임은 한글, 영문, 숫자만 사용할 수 있습니다.",
+    }),
+});
+
+export type FindIdSchemaType = z.infer<typeof FindIdSchema>;
