@@ -86,9 +86,12 @@ export default function BannerCarousel() {
           ))}
 
           {/* Prev */}
-          <div className="swiper-button-prev-custom absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+          <div
+            className="swiper-button-prev-custom absolute left-0 top-1/2 -translate-y-1/2 z-10 
+    bg-transparent rounded-full p-2 border-0 shadow-none hover:bg-white/10 transition"
+          >
             <svg
-              className="w-6 h-6 text-gray-700"
+              className="w-6 h-6 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -102,10 +105,12 @@ export default function BannerCarousel() {
             </svg>
           </div>
 
-          {/* Next */}
-          <div className="swiper-button-next-custom absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+          <div
+            className="swiper-button-next-custom absolute right-0 top-1/2 -translate-y-1/2 z-10 
+    bg-transparent rounded-full p-2 border-0 shadow-none hover:bg-white/10 transition"
+          >
             <svg
-              className="w-6 h-6 text-gray-700"
+              className="w-6 h-6 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
