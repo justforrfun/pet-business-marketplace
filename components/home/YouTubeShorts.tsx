@@ -33,18 +33,14 @@ export default function YouTubeShorts() {
     fetchShorts();
   }, []);
 
-  // YouTube URL에서 video ID 추출
   const getVideoId = (url: string): string | null => {
     try {
-      // https://www.youtube.com/shorts/VIDEO_ID 형식
       const shortsMatch = url.match(/youtube\.com\/shorts\/([^/?]+)/);
       if (shortsMatch) return shortsMatch[1];
 
-      // https://youtu.be/VIDEO_ID 형식
       const youtuBeMatch = url.match(/youtu\.be\/([^/?]+)/);
       if (youtuBeMatch) return youtuBeMatch[1];
 
-      // https://www.youtube.com/watch?v=VIDEO_ID 형식
       const watchMatch = url.match(/[?&]v=([^&]+)/);
       if (watchMatch) return watchMatch[1];
 
@@ -54,7 +50,6 @@ export default function YouTubeShorts() {
     }
   };
 
-  // YouTube Shorts 임베드 URL 생성
   const getEmbedUrl = (url: string): string | null => {
     const videoId = getVideoId(url);
     if (!videoId) return null;
@@ -62,16 +57,16 @@ export default function YouTubeShorts() {
   };
 
   if (loading) {
-    return <p className="text-gray-500 text-center py-8">숏츠를 불러오는 중...</p>;
+    return (
+      <p className="text-gray-500 text-center py-8">숏츠를 불러오는 중...</p>
+    );
   }
 
-  if (shorts.length === 0) {
-    return null;
-  }
+  if (shorts.length === 0) return null;
 
   return (
-    <div className="w-full flex py-8">
-      <div className="w-full max-w-screen-xl mx-auto px-10">
+    <div className="w-full py-8">
+      <div className="w-full max-w-[1440px] mx-auto">
         <Swiper
           modules={[Navigation]}
           navigation={{
@@ -82,30 +77,12 @@ export default function YouTubeShorts() {
           slidesPerView={6}
           loop={false}
           breakpoints={{
-            320: {
-              slidesPerView: 1,
-              spaceBetween: 12,
-            },
-            640: {
-              slidesPerView: 2,
-              spaceBetween: 16,
-            },
-            768: {
-              slidesPerView: 3,
-              spaceBetween: 20,
-            },
-            1024: {
-              slidesPerView: 4,
-              spaceBetween: 24,
-            },
-            1280: {
-              slidesPerView: 5,
-              spaceBetween: 24,
-            },
-            1536: {
-              slidesPerView: 6,
-              spaceBetween: 24,
-            },
+            320: { slidesPerView: 1, spaceBetween: 12 },
+            640: { slidesPerView: 2, spaceBetween: 16 },
+            768: { slidesPerView: 3, spaceBetween: 20 },
+            1024: { slidesPerView: 4, spaceBetween: 24 },
+            1280: { slidesPerView: 5, spaceBetween: 24 },
+            1536: { slidesPerView: 6, spaceBetween: 24 },
           }}
           className="w-full"
         >
@@ -137,7 +114,6 @@ export default function YouTubeShorts() {
             );
           })}
 
-          {/* 커스텀 네비게이션 버튼 */}
           <div className="swiper-button-prev-shorts absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
             <svg
               className="w-6 h-6 text-gray-700"
@@ -150,7 +126,7 @@ export default function YouTubeShorts() {
                 strokeLinejoin="round"
                 strokeWidth={2}
                 d="M15 19l-7-7 7-7"
-              ></path>
+              />
             </svg>
           </div>
 
@@ -166,7 +142,7 @@ export default function YouTubeShorts() {
                 strokeLinejoin="round"
                 strokeWidth={2}
                 d="M9 5l7 7-7 7"
-              ></path>
+              />
             </svg>
           </div>
         </Swiper>
@@ -174,4 +150,3 @@ export default function YouTubeShorts() {
     </div>
   );
 }
-

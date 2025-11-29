@@ -40,8 +40,8 @@ export default function BannerCarousel() {
   }
 
   return (
-    <div className="w-full flex">
-      <div className="w-full max-w-screen-xl mx-auto px-10">
+    <div className="w-full py-8">
+      <div className="w-full max-w-[1440px] mx-auto">
         <Swiper
           modules={[Navigation]}
           navigation={{
@@ -77,7 +77,7 @@ export default function BannerCarousel() {
                     />
                   )
                 ) : (
-                  <div className="w-full h-full flex items-center">
+                  <div className="w-full h-full flex items-center justify-center">
                     <span className="text-gray-400 text-4xl">🖼️</span>
                   </div>
                 )}
@@ -85,7 +85,7 @@ export default function BannerCarousel() {
             </SwiperSlide>
           ))}
 
-          {/* 커스텀 네비게이션 버튼 추가*/}
+          {/* Prev */}
           <div className="swiper-button-prev-custom absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
             <svg
               className="w-6 h-6 text-gray-700"
@@ -98,10 +98,11 @@ export default function BannerCarousel() {
                 strokeLinejoin="round"
                 strokeWidth={2}
                 d="M15 19l-7-7 7-7"
-              ></path>
+              />
             </svg>
           </div>
 
+          {/* Next */}
           <div className="swiper-button-next-custom absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
             <svg
               className="w-6 h-6 text-gray-700"
@@ -114,7 +115,7 @@ export default function BannerCarousel() {
                 strokeLinejoin="round"
                 strokeWidth={2}
                 d="M9 5l7 7-7 7"
-              ></path>
+              />
             </svg>
           </div>
         </Swiper>
