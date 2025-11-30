@@ -71,7 +71,12 @@ export function LoginForm() {
         return;
       }
 
-      // 로그인 성공
+      // 로그인 성공 - 사용자 정보 저장
+      if (data.success && data.data) {
+        localStorage.setItem('user', JSON.stringify(data.data));
+        toast.success(`${data.data.nickname}님, 환영합니다!`);
+      }
+      
       window.location.href = "/"; // 메인페이지로 이동
     } catch (err) {
       console.error("로그인 요청 실패:", err);
