@@ -4,10 +4,11 @@ import { supabase } from '@/lib/supabaseClient';
 // 게시글 상세 조회
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id, 10);
+    const { id: idParam } = await params;
+    const id = parseInt(idParam, 10);
 
     if (isNaN(id)) {
       return NextResponse.json(
@@ -42,13 +43,15 @@ export async function GET(
     const day = String(date.getDate()).padStart(2, '0');
     const formattedDate = `${year}.${month}.${day}`;
 
+    const member = Array.isArray(data.member) ? data.member[0] : data.member;
+    
     return NextResponse.json({
       success: true,
       data: {
         id: data.id,
         title: data.title,
         content: data.content,
-        author: data.member?.nickname || '알 수 없음',
+        author: member?.nickname || '알 수 없음',
         date: formattedDate,
         created_at: data.created_at,
         member_id: data.member_id,
@@ -66,10 +69,11 @@ export async function GET(
 // 게시글 수정
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id, 10);
+    const { id: idParam } = await params;
+    const id = parseInt(idParam, 10);
     const body = await request.json();
     const { title, content, memberId } = body;
 
@@ -134,10 +138,11 @@ export async function PUT(
 // 게시글 삭제
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id, 10);
+    const { id: idParam } = await params;
+    const id = parseInt(idParam, 10);
 
     if (isNaN(id)) {
       return NextResponse.json(

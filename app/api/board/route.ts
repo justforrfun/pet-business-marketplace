@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 
+interface BoardPost {
+  id: number;
+  title: string;
+  content: string;
+  created_at: string;
+  member_id: number;
+  member?: { nickname: string } | { nickname: string }[];
+}
+
+interface BoardListItem {
+  id: number;
+  title: string;
+  created_at: string;
+  member_id: number;
+  member?: { nickname: string } | { nickname: string }[];
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -100,17 +117,19 @@ export async function GET(request: NextRequest) {
     }
 
     // 데이터 변환: member join 결과 처리
-    const posts = (data || []).map((post: any) => {
+    const posts = (data || []).map((post: BoardListItem) => {
       const date = new Date(post.created_at);
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       const formattedDate = `${year}.${month}.${day}`;
 
+      const member = Array.isArray(post.member) ? post.member[0] : post.member;
+
       return {
         id: post.id,
         title: post.title,
-        author: post.member?.nickname || '알 수 없음',
+        author: member?.nickname || '알 수 없음',
         date: formattedDate,
         created_at: post.created_at,
       };
