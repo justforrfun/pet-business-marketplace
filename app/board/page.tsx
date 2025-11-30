@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -72,6 +73,7 @@ interface Post {
 }
 
 export default function BoardPage() {
+  const router = useRouter();
   const [showMyPosts, setShowMyPosts] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState('10개씩');
   const [currentPage, setCurrentPage] = useState(1);
@@ -179,10 +181,17 @@ export default function BoardPage() {
                 <tr
                   key={post.id}
                   className="hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => router.push(`/board/${post.id}`)}
                 >
                   <td className="px-6 py-4 text-sm text-gray-600">{post.id}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">
-                    {post.title}
+                    <Link
+                      href={`/board/${post.id}`}
+                      className="hover:text-blue-600"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {post.title}
+                    </Link>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
                     {post.author}

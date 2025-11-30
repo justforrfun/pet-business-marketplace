@@ -2,6 +2,7 @@
 
 import { supabase } from '@/lib/supabaseClient';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 
@@ -9,8 +10,15 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 
 export default function RightBanner() {
+  const pathname = usePathname();
   const [banners, setBanners] = useState<any[]>([]);
   const [hideBanner, setHideBanner] = useState(false);
+
+  // 게시글 상세 페이지에서는 배너 숨기기
+  const isBoardDetailPage =
+    pathname?.startsWith('/board/') &&
+    pathname !== '/board' &&
+    pathname !== '/board/write';
 
   useEffect(() => {
     const load = async () => {
@@ -39,7 +47,8 @@ export default function RightBanner() {
     return () => window.removeEventListener('resize', checkZoom);
   }, []);
 
-  if (hideBanner) return null;
+  // 게시글 상세 페이지이거나 zoom 상태일 때 배너 숨기기
+  if (hideBanner || isBoardDetailPage) return null;
 
   return (
     <aside
