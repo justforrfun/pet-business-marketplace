@@ -7,6 +7,7 @@ interface Product {
     id: number;
     name: string;
     image_url: string | null;
+    link_url?: string | null;
     tags: string[] | null;
     category_id: number;
 }
@@ -89,7 +90,12 @@ export default function ProductList({ selectedCategory }: { selectedCategory: nu
                 {products.map((product) => (
                     <div
                         key={product.id}
-                        className="flex flex-col items-start bg-white rounded-lg"
+                        onClick={() => {
+                            if (product.link_url) {
+                                window.open(product.link_url, '_blank');
+                            }
+                        }}
+                        className="flex flex-col items-start bg-white rounded-lg cursor-pointer hover:shadow-lg transition-shadow"
                     >
                         {/* 이미지 영역 */}
                         <div className="w-full aspect-[4/3] bg-gray-100 flex items-center justify-center rounded-lg overflow-hidden">
