@@ -89,6 +89,13 @@ interface Post {
   date: string;
 }
 
+interface User {
+  id: number;
+  loginId: string;
+  nickname: string;
+  status: string;
+}
+
 export default function BoardPage() {
   const router = useRouter();
   const [showMyPosts, setShowMyPosts] = useState(false);
