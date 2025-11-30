@@ -197,7 +197,7 @@ export default function BoardDetailPage() {
             <Button
               onClick={handleUpdate}
               disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-red-600 hover:bg-red-600 text-white"
             >
               {isSubmitting ? '저장 중...' : '저장'}
             </Button>

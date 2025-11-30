@@ -25,8 +25,8 @@ function ToggleSwitch({
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={cn(
-          'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-          checked ? 'bg-blue-600' : 'bg-gray-300'
+          'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2',
+          checked ? 'bg-red-600' : 'bg-gray-300'
         )}
       >
         <span
@@ -51,17 +51,34 @@ function Dropdown({
   options: string[];
 }) {
   return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-    >
-      {options.map((option) => (
-        <option key={option} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
+    <div className="relative">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-9 rounded-md border border-gray-300 bg-white pl-3 pr-8 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 appearance-none"
+      >
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+      <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+        <svg
+          className="w-4 h-4 text-gray-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </div>
+    </div>
   );
 }
 
@@ -187,7 +204,7 @@ export default function BoardPage() {
                   <td className="px-6 py-4 text-sm text-gray-900">
                     <Link
                       href={`/board/${post.id}`}
-                      className="hover:text-blue-600"
+                      className="hover:text-red-600"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {post.title}
@@ -196,7 +213,9 @@ export default function BoardPage() {
                   <td className="px-6 py-4 text-sm text-gray-600">
                     {post.author}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{post.date}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {post.date}
+                  </td>
                 </tr>
               ))
             )}
@@ -215,7 +234,7 @@ export default function BoardPage() {
               className={cn(
                 'px-3 py-2 text-sm border rounded transition-colors',
                 currentPage === page
-                  ? 'bg-blue-600 text-white border-blue-600'
+                  ? 'bg-red-600 text-white border-red-600'
                   : 'border-gray-300 bg-white hover:bg-gray-50'
               )}
             >
@@ -234,13 +253,13 @@ export default function BoardPage() {
         </div>
 
         {/* Write Post Button */}
-        <Link href="/board/write">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6">
-            글쓰기
-          </Button>
+        <Link
+          href="/board/write"
+          className="px-6 py-2 text-sm border rounded bg-red-600 text-white hover:bg-red-700"
+        >
+          글쓰기
         </Link>
       </div>
     </div>
   );
 }
-

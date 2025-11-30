@@ -74,7 +74,10 @@ export default function WriteBoardPage() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         {/* Title Input */}
         <div className="flex flex-col gap-2">
-          <Label htmlFor="title" className="text-base font-medium text-gray-900">
+          <Label
+            htmlFor="title"
+            className="text-base font-medium text-gray-900"
+          >
             제목 <span className="text-red-500">*</span>
           </Label>
           <Input
@@ -90,7 +93,10 @@ export default function WriteBoardPage() {
 
         {/* Content Input */}
         <div className="flex flex-col gap-2">
-          <Label htmlFor="content" className="text-base font-medium text-gray-900">
+          <Label
+            htmlFor="content"
+            className="text-base font-medium text-gray-900"
+          >
             내용 <span className="text-red-500">*</span>
           </Label>
           <textarea
@@ -123,7 +129,7 @@ export default function WriteBoardPage() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+            className="bg-red-600 hover:bg-red-700 text-white px-8"
           >
             {isSubmitting ? '등록 중...' : '등록'}
           </Button>
@@ -132,4 +138,3 @@ export default function WriteBoardPage() {
     </div>
   );
 }
-
