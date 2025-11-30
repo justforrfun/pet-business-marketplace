@@ -18,7 +18,6 @@ interface Banner {
 export default function RightBanner() {
   const pathname = usePathname();
   const [banners, setBanners] = useState<Banner[]>([]);
-  const [hideBanner, setHideBanner] = useState(false);
 
   // 게시글 상세 페이지에서는 배너 숨기기
   const isBoardDetailPage =
@@ -39,22 +38,8 @@ export default function RightBanner() {
     load();
   }, []);
 
-  // 🔥 화면 Zoom 여부 체크
-  useEffect(() => {
-    const checkZoom = () => {
-      const zoom = window.innerWidth / window.outerWidth;
-
-      // zoom < 1 → 100%보다 커진 상태 (110%, 125%, 150% 등)
-      setHideBanner(zoom < 1);
-    };
-
-    checkZoom();
-    window.addEventListener('resize', checkZoom);
-    return () => window.removeEventListener('resize', checkZoom);
-  }, []);
-
-  // 게시글 상세 페이지이거나 zoom 상태일 때 배너 숨기기
-  if (hideBanner || isBoardDetailPage) return null;
+  // 게시글 상세 페이지에서는 배너 숨기기
+  if (isBoardDetailPage) return null;
 
   return (
     <aside

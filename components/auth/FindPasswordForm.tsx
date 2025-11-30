@@ -23,7 +23,6 @@ export function FindPasswordForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // API 결과 저장
-  const [verified, setVerified] = useState(false);
   const [userId, setUserId] = useState<number | null>(null);
 
   // 모달 상태
@@ -91,15 +90,13 @@ export function FindPasswordForm() {
       }
 
       if (!data.verified) {
-        setVerified(false);
         setUserId(null);
         setModalOpen(true);
       } else {
-        setVerified(true);
         setUserId(data.userId);
         setStep(2); // ResetPasswordForm으로 이동!
       }
-    } catch (error) {
+    } catch {
       setServerError({ type: "NETWORK", message: null });
       setModalOpen(true);
     } finally {

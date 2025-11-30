@@ -93,7 +93,7 @@ export function FindIdForm() {
       }
 
       setModalOpen(true);
-    } catch (err) {
+    } catch {
       setServerError({ type: "NETWORK", message: null });
       setModalOpen(true);
     } finally {

@@ -7,7 +7,7 @@ import { FormCard } from "./FormCard";
 import { Submit } from "./Submit";
 import { LoginSchema } from "@/schemas/auth";
 import { useFormValidate } from "@/hooks/useFormValidate";
-import { TLoginFormError, TSignUpFormError } from "@/types/form";
+import { TLoginFormError } from "@/types/form";
 import { FormMessage } from "./FormMessage";
 import toast from "react-hot-toast";
 import Link from "next/link";

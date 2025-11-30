@@ -71,7 +71,7 @@ export function SignUpForm() {
 
       if (type === "login_id") setLoginIdCheck(msg);
       else setNickCheck(msg);
-    } catch (err) {
+    } catch {
       const msg = {
         message: "요청 중 오류가 발생했습니다.",
         color: "text-red-600",

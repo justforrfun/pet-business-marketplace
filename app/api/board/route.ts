@@ -1,15 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 
-interface BoardPost {
-  id: number;
-  title: string;
-  content: string;
-  created_at: string;
-  member_id: number;
-  member?: { nickname: string } | { nickname: string }[];
-}
-
 interface BoardListItem {
   id: number;
   title: string;
