@@ -1,21 +1,22 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Eye, EyeOff } from "lucide-react";
-import { FormCard } from "./FormCard";
-import { Submit } from "./Submit";
-import { LoginSchema } from "@/schemas/auth";
-import { useFormValidate } from "@/hooks/useFormValidate";
-import { TLoginFormError } from "@/types/form";
-import { FormMessage } from "./FormMessage";
+import {ChangeEvent, useEffect, useState} from "react";
+import {Input} from "../ui/input";
+import {Label} from "../ui/label";
+import {Eye, EyeOff} from "lucide-react";
+import {FormCard} from "./FormCard";
+import {Submit} from "./Submit";
+import {LoginSchema} from "@/schemas/auth";
+import {useFormValidate} from "@/hooks/useFormValidate";
+import {TLoginFormError} from "@/types/form";
+import {FormMessage} from "./FormMessage";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import {LoginFailModal} from "./LoginFailModal";
 
 export function LoginForm() {
-  const { errors, validateField } =
-    useFormValidate<TLoginFormError>(LoginSchema);
+  const {errors, validateField} =
+      useFormValidate<TLoginFormError>(LoginSchema);
 
   const [showPassword, setShowPassword] = useState(false);
   const [loginId, setLoginId] = useState("");
@@ -33,9 +34,12 @@ export function LoginForm() {
     }
   }, []);
 
-  // 입력 처리
+  // 로그인 실패 모달 상태
+  const [loginFailOpen, setLoginFailOpen] = useState(false);
+
+  // 필드 유효성 검사
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = event.target;
+    const {id, value} = event.target;
     validateField(id, value);
 
     if (id === "login_id") setLoginId(value);
@@ -64,7 +68,7 @@ export function LoginForm() {
     try {
       const res = await fetch("/api/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
           login_id: loginId,
           password,
@@ -74,7 +78,8 @@ export function LoginForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert("로그인에 실패했어요.\n아이디 또는 비밀번호를 다시 확인해 주세요.");
+        // 로그인 계정이 없을 경우 모달 표시
+        setLoginFailOpen(true);
         return;
       }
 
@@ -94,93 +99,107 @@ export function LoginForm() {
       window.location.href = "/";
     } catch (err) {
       console.error("로그인 실패:", err);
-      alert("로그인에 실패했어요.\n아이디 또는 비밀번호를 다시 확인해 주세요.");
+      setLoginFailOpen(true);
     }
   };
 
   return (
-    <FormCard
-      title="로그인"
-      footer={
-        <div className="flex items-center justify-center gap-2 text-sm">
-          <Link href="/find-id" className="hover:text-foreground">
-            아이디 찾기
-          </Link>
-          <span>|</span>
-          <Link href="/find-password" className="hover:text-foreground">
-            비밀번호 찾기
-          </Link>
-          <span>|</span>
-          <Link href="/signup" className="hover:text-foreground">
-            회원가입
-          </Link>
-        </div>
-      }
-    >
-      <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-        {/* 이메일 */}
-        <div className="grid gap-2">
-          <Label htmlFor="login_id" className="font-bold">
-            이메일
-          </Label>
-          <Input
-            id="login_id"
-            type="email"
-            placeholder="mail@email.com"
-            required
-            value={loginId}
-            onChange={handleChange}
-          />
-          {errors?.login_id && <FormMessage message={errors.login_id[0]} />}
-        </div>
+      <>
+        <FormCard
+            title="로그인"
+            footer={
+              <div className="flex items-center justify-center gap-2 text-sm">
+                <Link
+                    href="/find-id"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  아이디 찾기
+                </Link>
+                <span className="text-muted-foreground/50">|</span>
+                <Link
+                    href="/find-password"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  비밀번호 찾기
+                </Link>
+                <span className="text-muted-foreground/50">|</span>
+                <Link
+                    href="/signup"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  회원가입
+                </Link>
+              </div>
+            }
+        >
+          {/* onSubmit 연결 */}
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+            {/* 이메일 */}
+            <div className="grid gap-2">
+              <Label htmlFor="login_id" className="font-bold">
+                이메일
+              </Label>
+              <Input
+                  id="login_id"
+                  type="email"
+                  placeholder="mail@email.com"
+                  required
+                  value={loginId}
+                  onChange={handleChange}
+              />
+              {errors?.login_id && <FormMessage message={errors.login_id[0]}/>}
+            </div>
 
-        {/* 비밀번호 */}
-        <div className="grid gap-2">
-          <Label htmlFor="password" className="font-bold">
-            비밀번호
-          </Label>
-          <div className="relative">
-            <Input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="8~16자리 / 영문 대소문자+숫자+특수문자"
-              required
-              value={password}
-              onChange={handleChange}
-              className="pr-10"
-            />
+            {/* 비밀번호 */}
+            <div className="grid gap-2">
+              <Label htmlFor="password" className="font-bold">
+                비밀번호
+              </Label>
+              <div className="relative">
+                <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="8~16자리 / 영문 대소문자, 숫자, 특수문자 조합"
+                    required
+                    value={password}
+                    onChange={handleChange}
+                    className="pr-10"
+                />
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                >
+                  {showPassword ? (
+                      <EyeOff className="h-4 w-4"/>
+                  ) : (
+                      <Eye className="h-4 w-4"/>
+                  )}
+                </button>
+              </div>
+              {errors?.password && <FormMessage message={errors.password[0]}/>}
+            </div>
 
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-            >
-              {showPassword ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-          {errors?.password && <FormMessage message={errors.password[0]} />}
-        </div>
+            {/* 아이디 저장하기 */}
+            <div className="flex items-center justify-between text-sm text-gray-500">
+              <label className="flex items-center space-x-2">
+                <input 
+                  type="checkbox"
+                  checked={saveId}
+                  onChange={() => setSaveId(!saveId)}
+                />
+                <span>아이디 저장하기</span>
+              </label>
+            </div>
 
-        {/* 아이디 저장하기 */}
-        <div className="flex items-center text-sm text-gray-600">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={saveId}
-              onChange={() => setSaveId(!saveId)}
-            />
-            <span>아이디 저장하기</span>
-          </label>
-        </div>
+            {/* 로그인 버튼 */}
+            <div className="pt-6">
+              <Submit className="w-full">로그인</Submit>
+            </div>
+          </form>
+        </FormCard>
 
-        <div className="pt-6">
-          <Submit className="w-full">로그인</Submit>
-        </div>
-      </form>
-    </FormCard>
+        <LoginFailModal open={loginFailOpen} onOpenChange={setLoginFailOpen}/>
+      </>
   );
 }
