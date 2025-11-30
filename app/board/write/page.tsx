@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { AlertDialog } from '@/components/ui/alert-dialog';
 
 interface User {
   id: number;
@@ -20,9 +21,17 @@ export default function WriteBoardPage() {
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
+  const maxTitleLength = 30;
   const maxContentLength = 1000;
   const contentLength = content.length;
+
+  const showAlert = useCallback((message: string) => {
+    setAlertMessage(message);
+    setAlertOpen(true);
+  }, []);
 
   useEffect(() => {
     // 로그인 확인
@@ -31,32 +40,38 @@ export default function WriteBoardPage() {
       setUser(JSON.parse(userData));
     } else {
       // 로그인하지 않은 경우 로그인 페이지로 이동
-      alert('로그인이 필요합니다.');
-      router.push('/login');
+      showAlert('로그인이 필요합니다.');
+      setTimeout(() => {
+        router.push('/login');
+      }, 500);
     }
-  }, [router]);
+  }, [router, showAlert]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!user) {
-      alert('로그인이 필요합니다.');
-      router.push('/login');
+      showAlert('로그인이 필요합니다.');
       return;
     }
 
     if (!title.trim()) {
-      alert('제목을 입력해주세요.');
+      showAlert('제목을 입력해 주세요.');
+      return;
+    }
+
+    if (title.length > maxTitleLength) {
+      showAlert(`제목은 최대 ${maxTitleLength}자까지 입력 가능합니다.`);
       return;
     }
 
     if (!content.trim()) {
-      alert('내용을 입력해주세요.');
+      showAlert('내용을 입력해 주세요.');
       return;
     }
 
     if (content.length > maxContentLength) {
-      alert(`내용은 ${maxContentLength}자 이하로 입력해주세요.`);
+      showAlert(`제목은 최대 ${maxContentLength}자까지 입력 가능합니다.`);
       return;
     }
 
@@ -80,11 +95,11 @@ export default function WriteBoardPage() {
       if (result.success) {
         router.push('/board');
       } else {
-        alert(result.error || '게시글 등록에 실패했습니다.');
+        showAlert(result.error || '게시글 등록에 실패했습니다.');
       }
     } catch (error) {
       console.error('게시글 등록 오류:', error);
-      alert('게시글 등록 중 오류가 발생했습니다.');
+      showAlert('게시글 등록 중 오류가 발생했습니다.');
     } finally {
       setIsSubmitting(false);
     }
@@ -112,7 +127,6 @@ export default function WriteBoardPage() {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="제목을 입력하세요"
             className="h-10"
-            maxLength={200}
           />
         </div>
 
@@ -135,7 +149,6 @@ export default function WriteBoardPage() {
               'placeholder:text-muted-foreground',
               'resize-y'
             )}
-            maxLength={maxContentLength}
           />
           <div className="flex justify-end">
             <span
@@ -160,6 +173,13 @@ export default function WriteBoardPage() {
           </Button>
         </div>
       </form>
+
+      {/* Alert Dialog */}
+      <AlertDialog
+        open={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        description={alertMessage}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { AlertDialog } from '@/components/ui/alert-dialog';
 
 // Toggle Switch Component
 function ToggleSwitch({
@@ -96,9 +97,37 @@ export default function BoardPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  // 로그인 사용자 정보 가져오기
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   // itemsPerPage에서 숫자 추출
   const limit = parseInt(itemsPerPage.replace('개씩', ''), 10);
+
+  const handleWriteClick = (e: React.MouseEvent) => {
+    if (!user) {
+      e.preventDefault();
+      setAlertMessage('글쓰기는 로그인 후 이용할 수 있습니다. 로그인 해주세요.');
+      setAlertOpen(true);
+    }
+  };
+
+  const handleToggleMyPosts = (checked: boolean) => {
+    if (!user && checked) {
+      setAlertMessage('로그인이 필요합니다. 로그인 후 이용해 주세요.');
+      setAlertOpen(true);
+      return;
+    }
+    setShowMyPosts(checked);
+  };
 
   // 게시글 데이터 로드
   useEffect(() => {
@@ -111,11 +140,10 @@ export default function BoardPage() {
           showMyPosts: showMyPosts.toString(),
         });
 
-        // TODO: 로그인된 사용자의 memberId를 가져와야 함
-        // 현재는 임시로 빈 값 사용
-        // if (showMyPosts) {
-        //   params.append('memberId', memberId);
-        // }
+        // 내 글 보기 활성화 시 memberId 전달
+        if (showMyPosts && user) {
+          params.append('memberId', user.id.toString());
+        }
 
         const response = await fetch(`/api/board?${params.toString()}`);
         const result = await response.json();
@@ -149,7 +177,7 @@ export default function BoardPage() {
         <div className="flex items-center gap-4">
           <ToggleSwitch
             checked={showMyPosts}
-            onChange={setShowMyPosts}
+            onChange={handleToggleMyPosts}
             label="내 글 보기"
           />
           <Dropdown
@@ -166,7 +194,7 @@ export default function BoardPage() {
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                번호
+                ID
               </th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
                 제목
@@ -254,11 +282,19 @@ export default function BoardPage() {
         {/* Write Post Button */}
         <Link
           href="/board/write"
+          onClick={handleWriteClick}
           className="px-6 py-2 text-sm border rounded bg-red-600 text-white hover:bg-red-700"
         >
           글쓰기
         </Link>
       </div>
+
+      {/* Alert Dialog */}
+      <AlertDialog
+        open={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        description={alertMessage}
+      />
     </div>
   );
 }

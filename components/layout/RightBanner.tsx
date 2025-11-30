@@ -19,11 +19,8 @@ export default function RightBanner() {
   const pathname = usePathname();
   const [banners, setBanners] = useState<Banner[]>([]);
 
-  // 게시글 상세 페이지에서는 배너 숨기기
-  const isBoardDetailPage =
-    pathname?.startsWith('/board/') &&
-    pathname !== '/board' &&
-    pathname !== '/board/write';
+  // /board 전체 페이지에서는 배너 숨기기
+  const isBoardPage = pathname?.startsWith('/board');
 
   useEffect(() => {
     const load = async () => {
@@ -38,8 +35,8 @@ export default function RightBanner() {
     load();
   }, []);
 
-  // 게시글 상세 페이지에서는 배너 숨기기
-  if (isBoardDetailPage) return null;
+  // /board 전체 페이지에서는 배너 숨기기
+  if (isBoardPage) return null;
 
   return (
     <aside

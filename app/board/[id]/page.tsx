@@ -38,6 +38,7 @@ export default function BoardDetailPage() {
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
 
+  const maxTitleLength = 30;
   const maxContentLength = 1000;
 
   // 로그인 확인
@@ -110,17 +111,22 @@ export default function BoardDetailPage() {
     }
 
     if (!editTitle.trim()) {
-      alert('제목을 입력해주세요.');
+      alert('제목을 입력해 주세요.');
+      return;
+    }
+
+    if (editTitle.length > maxTitleLength) {
+      alert(`제목은 최대 ${maxTitleLength}자까지 입력 가능합니다.`);
       return;
     }
 
     if (!editContent.trim()) {
-      alert('내용을 입력해주세요.');
+      alert('내용을 입력해 주세요.');
       return;
     }
 
     if (editContent.length > maxContentLength) {
-      alert(`내용은 ${maxContentLength}자 이하로 입력해주세요.`);
+      alert(`내용은 최대 ${maxContentLength}자까지 입력 가능합니다.`);
       return;
     }
 
@@ -176,7 +182,7 @@ export default function BoardDetailPage() {
       return;
     }
 
-    if (!confirm('정말 삭제하시겠습니까?')) {
+    if (!confirm('이 게시글을 삭제하면 복구할 수 없습니다. 정말 삭제하시겠습니까?')) {
       return;
     }
 
@@ -282,7 +288,6 @@ export default function BoardDetailPage() {
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
               className="h-10"
-              maxLength={200}
             />
           </div>
         ) : (
@@ -319,7 +324,6 @@ export default function BoardDetailPage() {
                 'placeholder:text-muted-foreground',
                 'resize-y'
               )}
-              maxLength={maxContentLength}
             />
             <div className="flex justify-end">
               <span

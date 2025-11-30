@@ -78,7 +78,10 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
     const showMyPosts = searchParams.get('showMyPosts') === 'true';
-    const memberId = searchParams.get('memberId');
+    const memberIdStr = searchParams.get('memberId');
+    const memberId = memberIdStr ? parseInt(memberIdStr, 10) : null;
+
+    console.log('API params:', { showMyPosts, memberIdStr, memberId });
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -94,10 +97,16 @@ export async function GET(request: NextRequest) {
 
     // 내 글 보기 필터
     if (showMyPosts && memberId) {
+      console.log('Filtering by member_id:', memberId);
       query = query.eq('member_id', memberId);
     }
 
     const { data, error, count } = await query;
+
+    console.log('Query result:', { dataCount: data?.length, totalCount: count, error });
+    if (data && data.length > 0) {
+      console.log('Sample data member_id:', data[0].member_id);
+    }
 
     if (error) {
       console.error('게시판 조회 오류:', error);

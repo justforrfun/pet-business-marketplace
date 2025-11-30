@@ -24,7 +24,8 @@ export default function Header() {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('user');
+        // 모든 로컬 스토리지 데이터 삭제
+        localStorage.clear();
         setUser(null);
         window.location.href = '/';
     };
