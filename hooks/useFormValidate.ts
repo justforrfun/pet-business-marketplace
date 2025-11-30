@@ -1,33 +1,32 @@
-//hooks/useFormValidate.ts
 import { useState } from "react";
 import { ZodObject, ZodRawShape } from "zod";
 
 export function useFormValidate<T>(schema: ZodObject<ZodRawShape>) {
-    const [errors, setErrors] = useState<Partial<T>>({});
+  const [errors, setErrors] = useState<Partial<T>>({});
 
-    const validateField = (id: string, value: string) => {
-        // 함수형 업데이트로 최신 상태 참조
-        setErrors((prevErrors) => {
-            const newErrors = { ...prevErrors };
-            delete newErrors[id as keyof T];
+  const validateField = (id: string, value: string) => {
+    setErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors[id as keyof T]; // 입력 시 해당 필드 에러 삭제
 
-            const parsedValue = schema.pick({ [id]: true }).safeParse({
-                [id]: value,
-            });
+      // 해당 필드만 스키마 검증
+      const parsedValue = schema.pick({ [id]: true }).safeParse({
+        [id]: value,
+      });
 
-            if (!parsedValue.success) {
-                const fieldErrors = parsedValue.error.flatten().fieldErrors;
-                return {
-                    ...newErrors,
-                    ...fieldErrors
-                };
-            }
+      if (!parsedValue.success) {
+        const fieldErrors = parsedValue.error.flatten().fieldErrors;
+        return {
+          ...newErrors,
+          ...fieldErrors,
+        };
+      }
 
-            return newErrors;
-        });
-    };
+      return newErrors;
+    });
+  };
 
-    const clearErrors = () => setErrors({});
-
-    return { errors, validateField, clearErrors };
+  const clearErrors = () => setErrors({});
+  
+  return { errors, validateField, clearErrors, setErrors };
 }

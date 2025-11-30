@@ -13,3 +13,16 @@ export type TLoginFormError = {
 export type TFindIdFormError = {
   nickname?: string[];
 };
+
+
+// 비밀번호 찾기
+export type TFindPasswordFormError = {
+  login_id?: string[];
+  nickname?: string[];
+};
+
+// 비밀번호 재설정
+export type TResetPasswordFormError = {
+  newPassword?: string[];
+  confirmPassword?: string[];
+};
