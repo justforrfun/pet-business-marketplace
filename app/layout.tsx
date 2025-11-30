@@ -22,7 +22,7 @@ export default function RootLayout({
         <main className="flex-1 flex flex-col min-h-screen bg-white relative">
           <Header />
 
-          <div className="flex-1 w-full px-10 py-8">{children}</div>
+          <div className="flex-1 w-full max-w-6xl mx-auto px-10 py-8">{children}</div>
         </main>
 
         {/* 오른쪽 배너 영역 */}

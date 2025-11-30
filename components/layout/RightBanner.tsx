@@ -61,10 +61,10 @@ export default function RightBanner() {
       className="
         hidden lg:flex
         fixed
-        right-10
-        top-1/2 -translate-y-1/2
-        w-44
-        h-[760px]        /* 🔥 4개 배너 + 간격 정확히 반영한 높이 */
+        right-20
+        top-[calc(50%+32px)] -translate-y-1/2
+        w-32
+        h-[580px]
         flex-col
         items-center
         z-50
@@ -76,13 +76,13 @@ export default function RightBanner() {
           className="
     banner-prev
     absolute top-1 left-1/2 -translate-x-1/2
-    w-10 h-10
+    w-8 h-8
     flex items-center justify-center
     cursor-pointer z-20
   "
         >
           <svg
-            className="w-6 h-6 text-white"
+            className="w-5 h-5 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -101,13 +101,13 @@ export default function RightBanner() {
           className="
     banner-next
     absolute bottom-1 left-1/2 -translate-x-1/2
-    w-10 h-10
+    w-8 h-8
     flex items-center justify-center
     cursor-pointer z-20
   "
         >
           <svg
-            className="w-6 h-6 text-white"
+            className="w-5 h-5 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -129,7 +129,7 @@ export default function RightBanner() {
           }}
           modules={[Navigation]}
           spaceBetween={12} // 확실히 보이게 됨
-          className="w-full h-full pt-14 pb-14" /* 화살표 공간 확보 */
+          className="w-full h-full pt-10 pb-10"
         >
           {banners.map((b) => (
             <SwiperSlide key={b.id}>
