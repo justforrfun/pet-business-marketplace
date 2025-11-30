@@ -19,8 +19,10 @@ export default function RightBanner() {
   const pathname = usePathname();
   const [banners, setBanners] = useState<Banner[]>([]);
 
-  // /board 전체 페이지에서는 배너 숨기기
-  const isBoardPage = pathname?.startsWith('/board');
+  // 배너를 숨길 페이지 경로 체크
+  const shouldHideBanner = pathname?.startsWith('/board') || 
+                           pathname === '/signup' || 
+                           pathname === '/login';
 
   useEffect(() => {
     const load = async () => {
@@ -35,8 +37,8 @@ export default function RightBanner() {
     load();
   }, []);
 
-  // /board 전체 페이지에서는 배너 숨기기
-  if (isBoardPage) return null;
+  // 특정 페이지에서는 배너 숨기기
+  if (shouldHideBanner) return null;
 
   return (
     <aside

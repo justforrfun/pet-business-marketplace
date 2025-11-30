@@ -230,47 +230,49 @@ export default function BoardDetailPage() {
   return (
     <div className="w-full max-w-7xl mx-auto">
       {/* Edit/Delete Buttons - 본인 게시글만 표시 */}
-      {user && post && user.id === post.member_id && (
-        <div className="flex justify-end mb-20">
-          {isEditing ? (
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={handleCancel}
-                variant="outline"
-                disabled={isSubmitting}
-                className="border-gray-300"
-              >
-                취소
-              </Button>
-              <Button
-                onClick={handleUpdate}
-                disabled={isSubmitting}
-                className="bg-red-600 hover:bg-red-600 text-white"
-              >
-                {isSubmitting ? '저장 중...' : '저장'}
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={handleEdit}
-                variant="outline"
-                className="border-gray-300"
-              >
-                수정
-              </Button>
-              <Button
-                onClick={handleDelete}
-                variant="outline"
-                disabled={isDeleting}
-                className="border-gray-300"
-              >
-                {isDeleting ? '삭제 중...' : '삭제'}
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="flex justify-end mb-20">
+        {user && post && user.id === post.member_id && (
+          <>
+            {isEditing ? (
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handleCancel}
+                  variant="outline"
+                  disabled={isSubmitting}
+                  className="border-gray-300"
+                >
+                  취소
+                </Button>
+                <Button
+                  onClick={handleUpdate}
+                  disabled={isSubmitting}
+                  className="bg-red-600 hover:bg-red-600 text-white"
+                >
+                  {isSubmitting ? '저장 중...' : '저장'}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handleEdit}
+                  variant="outline"
+                  className="border-gray-300"
+                >
+                  수정
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  variant="outline"
+                  disabled={isDeleting}
+                  className="border-gray-300"
+                >
+                  {isDeleting ? '삭제 중...' : '삭제'}
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Post Title */}
       <div className="mb-4">
