@@ -18,7 +18,7 @@ export default function Sidebar() {
           href="/"
           className="text-2xl font-bold text-gray-800 cursor-pointer"
         >
-          Company
+          Logo
         </Link>
       </div>
 
