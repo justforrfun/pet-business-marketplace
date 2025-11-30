@@ -9,9 +9,15 @@ import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
+interface Banner {
+  id: number;
+  image_url: string | null;
+  link_url?: string;
+}
+
 export default function RightBanner() {
   const pathname = usePathname();
-  const [banners, setBanners] = useState<any[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
   const [hideBanner, setHideBanner] = useState(false);
 
   // 게시글 상세 페이지에서는 배너 숨기기
