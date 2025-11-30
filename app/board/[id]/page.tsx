@@ -16,6 +16,13 @@ interface PostDetail {
   member_id: number;
 }
 
+interface User {
+  id: number;
+  loginId: string;
+  nickname: string;
+  status: string;
+}
+
 export default function BoardDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -26,11 +33,20 @@ export default function BoardDetailPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
 
   const maxContentLength = 1000;
+
+  // 로그인 확인
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   // 게시글 상세 조회
   useEffect(() => {
@@ -64,6 +80,15 @@ export default function BoardDetailPage() {
 
   // 수정 모드 토글
   const handleEdit = () => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      router.push('/login');
+      return;
+    }
+    if (post && user.id !== post.member_id) {
+      alert('본인의 게시글만 수정할 수 있습니다.');
+      return;
+    }
     setIsEditing(true);
   };
 
@@ -78,6 +103,12 @@ export default function BoardDetailPage() {
 
   // 수정 저장
   const handleUpdate = async () => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      router.push('/login');
+      return;
+    }
+
     if (!editTitle.trim()) {
       alert('제목을 입력해주세요.');
       return;
@@ -96,7 +127,6 @@ export default function BoardDetailPage() {
     setIsSubmitting(true);
 
     try {
-      // TODO: 로그인된 사용자의 memberId를 가져와야 함
       const response = await fetch(`/api/board/${id}`, {
         method: 'PUT',
         headers: {
@@ -105,7 +135,7 @@ export default function BoardDetailPage() {
         body: JSON.stringify({
           title: editTitle.trim(),
           content: editContent.trim(),
-          // memberId: currentUser.id,
+          memberId: user.id,
         }),
       });
 
@@ -135,6 +165,17 @@ export default function BoardDetailPage() {
 
   // 삭제
   const handleDelete = async () => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      router.push('/login');
+      return;
+    }
+
+    if (post && user.id !== post.member_id) {
+      alert('본인의 게시글만 삭제할 수 있습니다.');
+      return;
+    }
+
     if (!confirm('정말 삭제하시겠습니까?')) {
       return;
     }
@@ -182,46 +223,48 @@ export default function BoardDetailPage() {
 
   return (
     <div className="w-full max-w-7xl mx-auto">
-      {/* Edit/Delete Buttons */}
-      <div className="flex justify-end mb-20">
-        {isEditing ? (
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={handleCancel}
-              variant="outline"
-              disabled={isSubmitting}
-              className="border-gray-300"
-            >
-              취소
-            </Button>
-            <Button
-              onClick={handleUpdate}
-              disabled={isSubmitting}
-              className="bg-red-600 hover:bg-red-600 text-white"
-            >
-              {isSubmitting ? '저장 중...' : '저장'}
-            </Button>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={handleEdit}
-              variant="outline"
-              className="border-gray-300"
-            >
-              수정
-            </Button>
-            <Button
-              onClick={handleDelete}
-              variant="outline"
-              disabled={isDeleting}
-              className="border-gray-300"
-            >
-              {isDeleting ? '삭제 중...' : '삭제'}
-            </Button>
-          </div>
-        )}
-      </div>
+      {/* Edit/Delete Buttons - 본인 게시글만 표시 */}
+      {user && post && user.id === post.member_id && (
+        <div className="flex justify-end mb-20">
+          {isEditing ? (
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={handleCancel}
+                variant="outline"
+                disabled={isSubmitting}
+                className="border-gray-300"
+              >
+                취소
+              </Button>
+              <Button
+                onClick={handleUpdate}
+                disabled={isSubmitting}
+                className="bg-red-600 hover:bg-red-600 text-white"
+              >
+                {isSubmitting ? '저장 중...' : '저장'}
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={handleEdit}
+                variant="outline"
+                className="border-gray-300"
+              >
+                수정
+              </Button>
+              <Button
+                onClick={handleDelete}
+                variant="outline"
+                disabled={isDeleting}
+                className="border-gray-300"
+              >
+                {isDeleting ? '삭제 중...' : '삭제'}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Post Title */}
       <div className="mb-4">

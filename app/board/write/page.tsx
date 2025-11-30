@@ -1,23 +1,49 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
+interface User {
+  id: number;
+  loginId: string;
+  nickname: string;
+  status: string;
+}
+
 export default function WriteBoardPage() {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   const maxContentLength = 1000;
   const contentLength = content.length;
 
+  useEffect(() => {
+    // 로그인 확인
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    } else {
+      // 로그인하지 않은 경우 로그인 페이지로 이동
+      alert('로그인이 필요합니다.');
+      router.push('/login');
+    }
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      router.push('/login');
+      return;
+    }
 
     if (!title.trim()) {
       alert('제목을 입력해주세요.');
@@ -37,7 +63,6 @@ export default function WriteBoardPage() {
     setIsSubmitting(true);
 
     try {
-      // TODO: 로그인된 사용자의 memberId를 가져와야 함
       const response = await fetch('/api/board', {
         method: 'POST',
         headers: {
@@ -46,7 +71,7 @@ export default function WriteBoardPage() {
         body: JSON.stringify({
           title: title.trim(),
           content: content.trim(),
-          // memberId: currentUser.id,
+          memberId: user.id,
         }),
       });
 
