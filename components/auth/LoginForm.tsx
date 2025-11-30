@@ -74,7 +74,7 @@ export function LoginForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error || "로그인 오류가 발생했습니다.");
+        alert("로그인에 실패했어요.\n아이디 또는 비밀번호를 다시 확인해 주세요.");
         return;
       }
 
@@ -94,7 +94,7 @@ export function LoginForm() {
       window.location.href = "/";
     } catch (err) {
       console.error("로그인 실패:", err);
-      toast.error("로그인 오류가 발생했습니다.");
+      alert("로그인에 실패했어요.\n아이디 또는 비밀번호를 다시 확인해 주세요.");
     }
   };
 
