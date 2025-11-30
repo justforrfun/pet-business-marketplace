@@ -58,3 +58,45 @@ export const FindIdSchema = z.object({
 });
 
 export type FindIdSchemaType = z.infer<typeof FindIdSchema>;
+
+export const FindPasswordSchema = z.object({
+  login_id: z
+    .string()
+    .min(1, { message: "이메일을 입력해 주세요." })
+    .email({ message: "유효한 이메일 주소를 입력해 주세요." }),
+
+  nickname: z
+    .string()
+    .min(1, { message: "닉네임을 입력해 주세요." })        // ← 추가해야 함!!
+    .min(2, { message: "닉네임은 2자 이상이어야 합니다." })
+    .max(12, { message: "닉네임은 12자 이하이어야 합니다." })
+    .regex(/^[가-힣a-zA-Z0-9]+$/, {
+      message: "닉네임은 한글, 영문, 숫자만 사용할 수 있습니다.",
+    }),
+});
+
+export type FindPasswordSchemaType = z.infer<typeof FindPasswordSchema>;
+
+export const ResetPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(1, { message: "비밀번호를 입력해 주세요." })
+      .regex(
+        /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\W_]).{8,16}$/,
+        {
+          message:
+            "비밀번호는 8~16자, 영문 대소문자, 숫자, 특수문자를 포함해야 합니다.",
+        }
+      ),
+
+    confirmPassword: z
+      .string()
+      .min(1, { message: "비밀번호를 재입력해 주세요." }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    path: ["confirmPassword"], // 에러 메시지를 confirmPassword 필드 아래에 표시
+    message: "비밀번호가 일치하지 않습니다.",
+  });
+
+export type ResetPasswordSchemaType = z.infer<typeof ResetPasswordSchema>;
