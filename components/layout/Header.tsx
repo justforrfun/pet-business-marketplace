@@ -36,7 +36,8 @@ export default function Header() {
   }, []);
 
   const handleLogout = async () => {
-    localStorage.clear();
+    // 저장된 아이디는 유지하고 user 정보만 삭제
+    localStorage.removeItem("user");
     window.location.href = "/";
   };
 
