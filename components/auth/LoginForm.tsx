@@ -1,5 +1,6 @@
 "use client";
-import { ChangeEvent, useState } from "react";
+
+import { ChangeEvent, useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Eye, EyeOff } from "lucide-react";
@@ -20,7 +21,19 @@ export function LoginForm() {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
 
-  // 필드 유효성 검사
+  // 아이디 저장 체크박스
+  const [saveId, setSaveId] = useState(false);
+
+  // 로그인 화면 진입 시 saved_login_id 가져오기
+  useEffect(() => {
+    const saved = localStorage.getItem("saved_login_id");
+    if (saved) {
+      setLoginId(saved);
+      setSaveId(true);
+    }
+  }, []);
+
+  // 입력 처리
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = event.target;
     validateField(id, value);
@@ -29,11 +42,10 @@ export function LoginForm() {
     if (id === "password") setPassword(value);
   };
 
-  // 로그인 처리 함수
+  // 로그인 처리
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // 필수 입력 확인
     if (!loginId.trim()) {
       toast.error("아이디를 입력해 주세요.");
       return;
@@ -44,11 +56,8 @@ export function LoginForm() {
       return;
     }
 
-    // 유효성 에러가 있는 경우
     if (Object.keys(errors).length > 0) {
-      toast.error(
-        "존재하는 계정이 없습니다. 아이디와 비밀번호를 다시 확인해주세요."
-      );
+      toast.error("아이디 혹은 비밀번호가 올바르지 않습니다.");
       return;
     }
 
@@ -58,29 +67,34 @@ export function LoginForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           login_id: loginId,
-          password: password,
+          password,
         }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(
-          data.error || "로그인 중 오류가 발생했습니다. 다시 시도해 주세요."
-        );
+        toast.error(data.error || "로그인 오류가 발생했습니다.");
         return;
       }
 
-      // 로그인 성공 - 사용자 정보 저장
+      // 로그인 성공 → 사용자 정보 저장
       if (data.success && data.data) {
-        localStorage.setItem('user', JSON.stringify(data.data));
-        toast.success(`${data.data.nickname}님, 환영합니다!`);
+        localStorage.setItem("user", JSON.stringify(data.data));
       }
-      
-      window.location.href = "/"; // 메인페이지로 이동
+
+      // ★ 아이디 저장하기 기능 반영
+      if (saveId) {
+        localStorage.setItem("saved_login_id", loginId);
+      } else {
+        localStorage.removeItem("saved_login_id");
+      }
+
+      toast.success(`${data.data.nickname}님 환영합니다!`);
+      window.location.href = "/";
     } catch (err) {
-      console.error("로그인 요청 실패:", err);
-      toast.error("로그인중 오류가 발생했습니다. 다시 시도해 주세요.");
+      console.error("로그인 실패:", err);
+      toast.error("로그인 오류가 발생했습니다.");
     }
   };
 
@@ -89,30 +103,20 @@ export function LoginForm() {
       title="로그인"
       footer={
         <div className="flex items-center justify-center gap-2 text-sm">
-          <Link
-            href="/find-id"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
+          <Link href="/find-id" className="hover:text-foreground">
             아이디 찾기
           </Link>
-          <span className="text-muted-foreground/50">|</span>
-          <Link
-            href="/find-password"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
+          <span>|</span>
+          <Link href="/find-password" className="hover:text-foreground">
             비밀번호 찾기
           </Link>
-          <span className="text-muted-foreground/50">|</span>
-          <Link
-            href="/signup"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
+          <span>|</span>
+          <Link href="/signup" className="hover:text-foreground">
             회원가입
           </Link>
         </div>
       }
     >
-      {/* onSubmit 연결 */}
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         {/* 이메일 */}
         <div className="grid gap-2">
@@ -139,21 +143,22 @@ export function LoginForm() {
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="8~16자리 / 영문 대소문자, 숫자, 특수문자 조합"
+              placeholder="8~16자리 / 영문 대소문자+숫자+특수문자"
               required
               value={password}
               onChange={handleChange}
               className="pr-10"
             />
+
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
             >
               {showPassword ? (
-                <EyeOff className="h-4 w-4" />
+                <EyeOff className="w-4 h-4" />
               ) : (
-                <Eye className="h-4 w-4" />
+                <Eye className="w-4 h-4" />
               )}
             </button>
           </div>
@@ -161,14 +166,17 @@ export function LoginForm() {
         </div>
 
         {/* 아이디 저장하기 */}
-        <div className="flex items-center justify-between text-sm text-gray-500">
+        <div className="flex items-center text-sm text-gray-600">
           <label className="flex items-center space-x-2">
-            <input type="checkbox" />
+            <input
+              type="checkbox"
+              checked={saveId}
+              onChange={() => setSaveId(!saveId)}
+            />
             <span>아이디 저장하기</span>
           </label>
         </div>
 
-        {/* 로그인 버튼 */}
         <div className="pt-6">
           <Submit className="w-full">로그인</Submit>
         </div>
