@@ -1,6 +1,69 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { title, content, memberId } = body;
+
+    if (!title || !title.trim()) {
+      return NextResponse.json(
+        { success: false, error: '제목을 입력해주세요.' },
+        { status: 400 }
+      );
+    }
+
+    if (!content || !content.trim()) {
+      return NextResponse.json(
+        { success: false, error: '내용을 입력해주세요.' },
+        { status: 400 }
+      );
+    }
+
+    // TODO: 실제 로그인된 사용자의 memberId를 사용해야 함
+    // 현재는 임시로 body에서 받거나 기본값 사용
+    const finalMemberId = memberId || 1; // 임시값
+
+    const now = new Date().toISOString();
+
+    const { data, error } = await supabase
+      .from('board')
+      .insert([
+        {
+          title: title.trim(),
+          content: content.trim(),
+          member_id: finalMemberId,
+          created_at: now,
+          created_by: finalMemberId,
+          updated_at: now,
+          updated_by: finalMemberId,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('게시글 등록 오류:', error);
+      return NextResponse.json(
+        { success: false, error: '게시글 등록 중 오류가 발생했습니다.' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data,
+      message: '게시글이 등록되었습니다.',
+    });
+  } catch (error) {
+    console.error('서버 오류:', error);
+    return NextResponse.json(
+      { success: false, error: '서버 오류가 발생했습니다.' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

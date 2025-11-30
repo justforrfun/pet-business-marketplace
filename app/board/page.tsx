@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -224,9 +225,11 @@ export default function BoardPage() {
         </div>
 
         {/* Write Post Button */}
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6">
-          글쓰기
-        </Button>
+        <Link href="/board/write">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6">
+            글쓰기
+          </Button>
+        </Link>
       </div>
     </div>
   );
