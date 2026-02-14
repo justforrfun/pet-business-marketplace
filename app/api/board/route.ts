@@ -7,6 +7,7 @@ interface BoardListItem {
   created_at: string;
   member_id: number;
   is_pinned: boolean;
+  view_count: number;
   member?: { nickname: string } | { nickname: string }[];
 }
 
@@ -88,7 +89,7 @@ export async function GET(request: NextRequest) {
     // 고정 게시글 조회 (최대 3개, pinned_at 최신순)
     let pinnedQuery = supabase
       .from('board')
-      .select('id, title, created_at, member_id, is_pinned, member(nickname)')
+      .select('id, title, created_at, member_id, is_pinned, view_count, member(nickname)')
       .eq('is_pinned', true)
       .order('pinned_at', { ascending: false })
       .limit(3);
@@ -106,7 +107,7 @@ export async function GET(request: NextRequest) {
     // 일반 게시글 조회 (고정글 제외)
     let query = supabase
       .from('board')
-      .select('id, title, created_at, member_id, is_pinned, member(nickname)', {
+      .select('id, title, created_at, member_id, is_pinned, view_count, member(nickname)', {
         count: 'exact',
       })
       .eq('is_pinned', false)
@@ -143,8 +144,7 @@ export async function GET(request: NextRequest) {
         title: post.title,
         author: member?.nickname || '알 수 없음',
         date: formattedDate,
-        created_at: post.created_at,
-        is_pinned: post.is_pinned,
+        view_count: post.view_count,
       };
     };
 

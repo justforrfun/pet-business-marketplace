@@ -14,6 +14,7 @@ interface PostDetail {
   author: string;
   date: string;
   member_id: number;
+  view_count: number;
 }
 
 interface User {
@@ -301,6 +302,7 @@ export default function BoardDetailPage() {
       <div className="flex items-center gap-4 text-sm text-gray-600 mb-6">
         <span>작성자 {post.author}</span>
         <span>작성일 {post.date}</span>
+        <span>조회수 {post.view_count}</span>
       </div>
 
       {/* Separator */}

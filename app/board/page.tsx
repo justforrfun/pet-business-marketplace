@@ -55,7 +55,7 @@ function Dropdown({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-9 rounded-md border border-gray-300 bg-white pl-3 pr-8 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 appearance-none"
+        className="h-9 rounded-md border border-gray-300 bg-white pl-3 pr-8 py-1 text-sm focus:outline-none appearance-none"
       >
         {options.map((option) => (
           <option key={option} value={option}>
@@ -87,7 +87,7 @@ interface Post {
   title: string;
   author: string;
   date: string;
-  is_pinned?: boolean;
+  view_count: number;
 }
 
 interface User {
@@ -180,7 +180,7 @@ export default function BoardPage() {
   }, [showMyPosts, itemsPerPage]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto">
       {/* Title */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-gray-900">게시판</h1>
@@ -200,33 +200,43 @@ export default function BoardPage() {
 
       {/* Table */}
       <div className="border border-gray-200 rounded-lg overflow-hidden mb-6">
-        <table className="w-full">
+        <table className="w-full table-fixed">
+          <colgroup>
+            <col className="w-16" />
+            <col />
+            <col className="w-24" />
+            <col className="w-28" />
+            <col className="w-20" />
+          </colgroup>
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+              <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">
                 ID
               </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
                 제목
               </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+              <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">
                 작성자
               </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+              <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">
                 작성일
+              </th>
+              <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">
+                조회수
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {loading ? (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                   로딩 중...
                 </td>
               </tr>
             ) : pinnedPosts.length === 0 && posts.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                   게시글이 없습니다.
                 </td>
               </tr>
@@ -239,8 +249,8 @@ export default function BoardPage() {
                     className="bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer"
                     onClick={() => router.push(`/board/${post.id}`)}
                   >
-                    <td className="px-6 py-4 text-sm text-gray-600">{post.id}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-4 py-3 text-sm text-gray-600 text-center">{post.id}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 truncate">
                       <Link
                         href={`/board/${post.id}`}
                         className="hover:text-red-600"
@@ -249,11 +259,14 @@ export default function BoardPage() {
                         {post.title}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-gray-600 text-center">
                       {post.author}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-gray-600 text-center">
                       {post.date}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600 text-center">
+                      {post.view_count}
                     </td>
                   </tr>
                 ))}
@@ -264,8 +277,8 @@ export default function BoardPage() {
                     className="bg-white hover:bg-gray-50 transition-colors cursor-pointer"
                     onClick={() => router.push(`/board/${post.id}`)}
                   >
-                    <td className="px-6 py-4 text-sm text-gray-600">{post.id}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-4 py-3 text-sm text-gray-600 text-center">{post.id}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 truncate">
                       <Link
                         href={`/board/${post.id}`}
                         className="hover:text-red-600"
@@ -274,11 +287,14 @@ export default function BoardPage() {
                         {post.title}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-gray-600 text-center">
                       {post.author}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-gray-600 text-center">
                       {post.date}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600 text-center">
+                      {post.view_count}
                     </td>
                   </tr>
                 ))}

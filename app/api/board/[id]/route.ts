@@ -19,7 +19,7 @@ export async function GET(
 
     const { data, error } = await supabase
       .from('board')
-      .select('id, title, content, created_at, member_id, member(nickname)')
+      .select('id, title, content, created_at, member_id, view_count, member(nickname)')
       .eq('id', id)
       .single();
 
@@ -37,6 +37,12 @@ export async function GET(
       );
     }
 
+    // 조회수 증가
+    await supabase
+      .from('board')
+      .update({ view_count: (data.view_count || 0) + 1 })
+      .eq('id', id);
+
     const date = new Date(data.created_at);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -44,7 +50,7 @@ export async function GET(
     const formattedDate = `${year}.${month}.${day}`;
 
     const member = Array.isArray(data.member) ? data.member[0] : data.member;
-    
+
     return NextResponse.json({
       success: true,
       data: {
@@ -53,8 +59,8 @@ export async function GET(
         content: data.content,
         author: member?.nickname || '알 수 없음',
         date: formattedDate,
-        created_at: data.created_at,
         member_id: data.member_id,
+        view_count: (data.view_count || 0) + 1,
       },
     });
   } catch (error) {
