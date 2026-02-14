@@ -87,6 +87,7 @@ interface Post {
   title: string;
   author: string;
   date: string;
+  is_pinned?: boolean;
 }
 
 interface User {
@@ -101,6 +102,7 @@ export default function BoardPage() {
   const [showMyPosts, setShowMyPosts] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState('10개씩');
   const [currentPage, setCurrentPage] = useState(1);
+  const [pinnedPosts, setPinnedPosts] = useState<Post[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -156,6 +158,7 @@ export default function BoardPage() {
         const result = await response.json();
 
         if (result.success) {
+          setPinnedPosts(result.data.pinnedPosts || []);
           setPosts(result.data.posts);
           setTotalPages(result.data.pagination.totalPages);
         } else {
@@ -214,44 +217,72 @@ export default function BoardPage() {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-200">
             {loading ? (
               <tr>
                 <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
                   로딩 중...
                 </td>
               </tr>
-            ) : posts.length === 0 ? (
+            ) : pinnedPosts.length === 0 && posts.length === 0 ? (
               <tr>
                 <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
                   게시글이 없습니다.
                 </td>
               </tr>
             ) : (
-              posts.map((post) => (
-                <tr
-                  key={post.id}
-                  className="hover:bg-gray-50 transition-colors cursor-pointer"
-                  onClick={() => router.push(`/board/${post.id}`)}
-                >
-                  <td className="px-6 py-4 text-sm text-gray-600">{post.id}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    <Link
-                      href={`/board/${post.id}`}
-                      className="hover:text-red-600"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {post.title}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {post.author}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {post.date}
-                  </td>
-                </tr>
-              ))
+              <>
+                {/* 고정 게시글 */}
+                {pinnedPosts.map((post) => (
+                  <tr
+                    key={`pinned-${post.id}`}
+                    className="bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer"
+                    onClick={() => router.push(`/board/${post.id}`)}
+                  >
+                    <td className="px-6 py-4 text-sm text-gray-600">{post.id}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <Link
+                        href={`/board/${post.id}`}
+                        className="hover:text-red-600"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {post.title}
+                      </Link>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {post.author}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {post.date}
+                    </td>
+                  </tr>
+                ))}
+                {/* 일반 게시글 */}
+                {posts.map((post) => (
+                  <tr
+                    key={post.id}
+                    className="bg-white hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => router.push(`/board/${post.id}`)}
+                  >
+                    <td className="px-6 py-4 text-sm text-gray-600">{post.id}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <Link
+                        href={`/board/${post.id}`}
+                        className="hover:text-red-600"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {post.title}
+                      </Link>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {post.author}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {post.date}
+                    </td>
+                  </tr>
+                ))}
+              </>
             )}
           </tbody>
         </table>

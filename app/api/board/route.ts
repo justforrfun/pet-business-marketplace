@@ -6,6 +6,7 @@ interface BoardListItem {
   title: string;
   created_at: string;
   member_id: number;
+  is_pinned: boolean;
   member?: { nickname: string } | { nickname: string }[];
 }
 
@@ -84,12 +85,31 @@ export async function GET(request: NextRequest) {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
-    // 기본 쿼리: board와 member join
+    // 고정 게시글 조회 (최대 3개, pinned_at 최신순)
+    let pinnedQuery = supabase
+      .from('board')
+      .select('id, title, created_at, member_id, is_pinned, member(nickname)')
+      .eq('is_pinned', true)
+      .order('pinned_at', { ascending: false })
+      .limit(3);
+
+    if (showMyPosts && memberId) {
+      pinnedQuery = pinnedQuery.eq('member_id', memberId);
+    }
+
+    const { data: pinnedData, error: pinnedError } = await pinnedQuery;
+
+    if (pinnedError) {
+      console.error('고정 게시글 조회 오류:', pinnedError);
+    }
+
+    // 일반 게시글 조회 (고정글 제외)
     let query = supabase
       .from('board')
-      .select('id, title, created_at, member_id, member(nickname)', {
+      .select('id, title, created_at, member_id, is_pinned, member(nickname)', {
         count: 'exact',
       })
+      .eq('is_pinned', false)
       .order('created_at', { ascending: false })
       .range(from, to);
 
@@ -108,8 +128,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 데이터 변환: member join 결과 처리
-    const posts = (data || []).map((post: BoardListItem) => {
+    // 데이터 변환 함수
+    const formatPost = (post: BoardListItem) => {
       const date = new Date(post.created_at);
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -124,14 +144,19 @@ export async function GET(request: NextRequest) {
         author: member?.nickname || '알 수 없음',
         date: formattedDate,
         created_at: post.created_at,
+        is_pinned: post.is_pinned,
       };
-    });
+    };
+
+    const pinnedPosts = (pinnedData || []).map(formatPost);
+    const posts = (data || []).map(formatPost);
 
     const totalPages = count ? Math.ceil(count / limit) : 1;
 
     return NextResponse.json({
       success: true,
       data: {
+        pinnedPosts,
         posts,
         pagination: {
           currentPage: page,
