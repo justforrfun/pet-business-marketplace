@@ -344,6 +344,17 @@ export default function BoardDetailPage() {
           </div>
         )}
       </div>
+
+      {/* 목록 버튼 */}
+      <div className="flex justify-center">
+        <Button
+          onClick={() => router.push('/board')}
+          variant="outline"
+          className="border-gray-300"
+        >
+          목록으로
+        </Button>
+      </div>
     </div>
   );
 }
