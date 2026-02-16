@@ -45,7 +45,7 @@ export default function RightBanner() {
       className="
         hidden lg:flex
         fixed
-        right-20
+        right-14
         top-[calc(50%+32px)] -translate-y-1/2
         w-32
         h-[580px]
