@@ -12,7 +12,13 @@ interface Product {
     category_id: number;
 }
 
-export default function ProductList({ selectedCategory }: { selectedCategory: number | null; }) {
+interface ProductListProps {
+    selectedParent: number | null;
+    selectedChild: number | null;
+    childCategoryIds: number[];
+}
+
+export default function ProductList({ selectedParent, selectedChild, childCategoryIds }: ProductListProps) {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(0);
@@ -26,7 +32,7 @@ export default function ProductList({ selectedCategory }: { selectedCategory: nu
         setPage(0);
         setHasMore(true);
         loadProducts(0);
-    }, [selectedCategory]);
+    }, [selectedParent, selectedChild]);
 
     const loadProducts = async (pageIdx: number) => {
         setLoading(true);
@@ -40,11 +46,15 @@ export default function ProductList({ selectedCategory }: { selectedCategory: nu
             .order('id', { ascending: true })
             .range(from, to);
 
-        if (selectedCategory) {
-            query = query.eq('category_id', selectedCategory);
+        if (selectedChild) {
+            query = query.eq('category_id', selectedChild);
+        } else if (selectedParent) {
+            if (childCategoryIds.length > 0) {
+                query = query.in('category_id', childCategoryIds);
+            } else {
+                query = query.eq('category_id', selectedParent);
+            }
         }
-
-        console.log('selected category: ', selectedCategory);
 
         const { data, error } = await query;
         if (error) console.error(error);
