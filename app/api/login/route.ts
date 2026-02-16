@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
-import { LoginSchema } from "@/schemas/auth"; 
+import { LoginSchema } from "@/schemas/auth";
+import { addPointAndUpdateGrade } from "@/lib/pointUtils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +40,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 4. 로그인 성공
+    // 4. 포인트 적립 (로그인 +10)
+    await addPointAndUpdateGrade(user.id, 10);
+
+    // 5. 최신 포인트·등급 조회
+    const { data: updated } = await supabase
+      .from("member")
+      .select("point, grade:grade_id(id, name, category)")
+      .eq("id", user.id)
+      .single();
+
+    // 6. 로그인 성공
     return NextResponse.json({
       success: true,
       message: "로그인 성공",
@@ -48,6 +59,8 @@ export async function POST(request: NextRequest) {
         loginId: user.login_id,
         nickname: user.nickname,
         status: user.status,
+        point: updated?.point ?? 0,
+        grade: updated?.grade ?? null,
       },
     });
   } catch (error) {

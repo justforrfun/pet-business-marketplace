@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
+import { addPointAndUpdateGrade } from '@/lib/pointUtils';
 
 interface BoardListItem {
   id: number;
@@ -59,6 +60,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // 포인트 적립 (게시글 작성 +50)
+    await addPointAndUpdateGrade(finalMemberId, 50);
 
     return NextResponse.json({
       success: true,
